@@ -3,6 +3,9 @@
 
 .DS_Store
 
+pylon/data/czce/history_md/unzip/
+pylon/data/dce/history_md/unzip/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
