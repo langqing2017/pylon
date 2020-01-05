@@ -22,3 +22,9 @@ class DataStore(object):
 
     def write_all(self, list, type, keys = []):
         raise NotImplementedError()
+
+    def get_last_update(self, type, keys = []):
+        raise NotImplementedError()
+
+    def set_last_update(self, time, type, keys = []):
+        raise NotImplementedError()

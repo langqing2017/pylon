@@ -62,8 +62,9 @@ def __parse_float(str, value):
         return value
     return float(str)
 
-def init_future_bar_1d_shfe(store, datadir, ins_list):
+def init_future_bar_1d_shfe(store, datadir):
     path = os.path.join(datadir, "shfe/history_md/history_md_%d.xls")
+    ins_list = []
     md_map = {}
     for year in range(2010, 2019):
         wb = xlrd.open_workbook(path % year)
@@ -106,6 +107,10 @@ def init_future_bar_1d_shfe(store, datadir, ins_list):
         product = instrument[:2]
         ins = FutureInstrument("SHFE", product, instrument)
         ins_list.append(ins)
+    
+    ins_list.sort(key=str)
+    store.append_all(ins_list, FutureInstrument)
+    store.set_last_update(datetime.datetime.strptime("20190101", "%Y%m%d"), FutureBarData, ["1d", "shfe"])
 
 def __parse_future_bar_1d_dce_zip(datadir, products, md_map):
     path = os.path.join(datadir, "dce/history_md/history_md_%d_%s.zip")
@@ -218,8 +223,9 @@ def __parse_future_bar_1d_dce_2018(datadir, products, md_map):
                 md_map[instrument] = []
             md_map[instrument].append(data)
 
-def init_future_bar_1d_dce(store, datadir, ins_list):
+def init_future_bar_1d_dce(store, datadir):
     products = store.get_all(FutureProduct)
+    ins_list = []
     md_map = {}
     __parse_future_bar_1d_dce_zip(datadir, products, md_map)
     __parse_future_bar_1d_dce_2017(datadir, products, md_map)
@@ -234,8 +240,13 @@ def init_future_bar_1d_dce(store, datadir, ins_list):
             product = instrument[:2]
         ins = FutureInstrument("DCE", product, instrument)
         ins_list.append(ins)
+    
+    ins_list.sort(key=str)
+    store.append_all(ins_list, FutureInstrument)
+    store.set_last_update(datetime.datetime.strptime("20190101", "%Y%m%d"), FutureBarData, ["1d", "dce"])
 
-def init_future_bar_1d_czce(store, datadir, ins_list):
+def init_future_bar_1d_czce(store, datadir):
+    ins_list = []
     md_map = {}
     path = os.path.join(datadir, "czce/history_md/datahistory%d.zip")
     newpath = os.path.join(datadir, "czce/history_md/unzip/datahistory%d.csv")
@@ -277,7 +288,7 @@ def init_future_bar_1d_czce(store, datadir, ins_list):
                 clear_price = float(ss[7].strip().replace(",", ""))
                 volumn = int(ss[10].strip().replace(",", ""))
                 money = float(ss[13].strip().replace(",", ""))
-                position = int(ss[12].strip().replace(",", ""))
+                position = int(ss[11].strip().replace(",", ""))
                 data = FutureBarData(time, open_price, high_price, low_price, \
                     close_price, clear_price, pre_close_price, pre_clear_price, volumn, money, position)
                 
@@ -287,10 +298,6 @@ def init_future_bar_1d_czce(store, datadir, ins_list):
 
     for instrument, items in md_map.items():
         items.sort(key=lambda x:x.time)
-        position = 0
-        for item in items:
-            position += item.position
-            item.position += position
         store.write_all(items, FutureBarData, ["1d", instrument])
 
         if instrument[1].isdigit():
@@ -299,6 +306,10 @@ def init_future_bar_1d_czce(store, datadir, ins_list):
             product = instrument[:2]
         ins = FutureInstrument("CZCE", product, instrument)
         ins_list.append(ins)
+    
+    ins_list.sort(key=str)
+    store.append_all(ins_list, FutureInstrument)
+    store.set_last_update(datetime.datetime.strptime("20190101", "%Y%m%d"), FutureBarData, ["1d", "czce"])
 
 if __name__ == "__main__":
     from pylon.store.csv import CsvDataStore

@@ -21,16 +21,23 @@ class StoneHandler():
         self.init_future()
         self.generate_future_index()
 
+    def update_store(self):
+        self.update_future()
+
     def init_future(self):
         init_future_trading_calendar(self.__store, PYLON_DATA_PATH)
         init_future_product(self.__store, PYLON_DATA_PATH)
 
-        ins_list = []
-        init_future_bar_1d_shfe(self.__store, PYLON_DATA_PATH, ins_list)
-        init_future_bar_1d_dce(self.__store, PYLON_DATA_PATH, ins_list)
-        init_future_bar_1d_czce(self.__store, PYLON_DATA_PATH, ins_list)
-        ins_list.sort(key=str)
-        self.__store.write_all(ins_list, FutureInstrument)
+        # clear FutureInstrument
+        self.__store.write_all([], FutureInstrument)
+        init_future_bar_1d_shfe(self.__store, PYLON_DATA_PATH)
+        init_future_bar_1d_dce(self.__store, PYLON_DATA_PATH)
+        init_future_bar_1d_czce(self.__store, PYLON_DATA_PATH)
+
+    def update_future(self):
+        update_future_bar_1d_shfe(self.__store)
+        update_future_bar_1d_dce(self.__store)
+        update_future_bar_1d_czce(self.__store)
 
     def generate_future_index(self):
         ins_list = self.__store.get_all(FutureInstrument)

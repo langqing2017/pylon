@@ -8,6 +8,7 @@ Created on 2019/12/22
 """
 
 import os.path
+import datetime
 from pylon.model import type_convert
 from pylon.store import DataStore
 
@@ -73,6 +74,21 @@ class CsvDataStore(DataStore):
         with open(filepath, "w") as fp:
             for data in list:
                 fp.write(str(data).replace("_", ",") + "\n")
+
+    def get_last_update(self, type, keys = []):
+        keys.append("last_update")
+        filepath = self.get_filepath(type, keys)
+        with open(filepath, "r") as fp:
+            for line in fp:
+                if len(line.strip()) != 0:
+                    return datetime.datetime.strptime(line.strip(), "%Y%m%d%H%M%S")
+        return None
+
+    def set_last_update(self, time, type, keys = []):
+        keys.append("last_update")
+        filepath = self.get_filepath(type, keys)
+        with open(filepath, "w") as fp:
+            fp.write(time.strftime("%Y%m%d%H%M%S"))
 
 if __name__ == "__main__":
     from pylon.model.future import FutureTradingCalendar
