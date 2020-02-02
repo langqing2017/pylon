@@ -49,3 +49,4 @@ class StoneHandler():
 
         for product,ins_list in product_map.items():
             gen_future_index_EI(product, ins_list, self.__store)
+            gen_future_index_GI(product, ins_list, self.__store)

@@ -17,6 +17,13 @@ import re
 from pylon.model.future import FutureTradingCalendar, FutureProduct, FutureBarData, FutureInstrument
 
 regex_date = "^\d{8}$"
+CZCE_NAME_MAP = {
+    "ME": "MA",
+    "TC": "ZC", # 动力煤
+    "RO": "OI", # 菜油
+    "ER": "RI", # 早籼稻
+    "WS": "WH", # 强麦
+}
 
 def init_future_trading_calendar(store, datadir):
     path = os.path.join(datadir, "shfe/trading_calendar/trading_calendar_%d.csv")
@@ -101,12 +108,13 @@ def init_future_bar_1d_shfe(store, datadir):
             md_map[instrument].append(data)
 
     for instrument, items in md_map.items():
-        items.sort(key=lambda x:x.time)
-        store.write_all(items, FutureBarData, ["1d", instrument])
-
         product = instrument[:2]
-        ins = FutureInstrument("SHFE", product, instrument)
+        instrument_id = "SHFE.%s" % instrument
+        ins = FutureInstrument(instrument_id, "SHFE", product, instrument)
         ins_list.append(ins)
+
+        items.sort(key=lambda x:x.time)
+        store.write_all(items, FutureBarData, ["1d", instrument_id])
     
     ins_list.sort(key=str)
     store.append_all(ins_list, FutureInstrument)
@@ -231,15 +239,16 @@ def init_future_bar_1d_dce(store, datadir):
     __parse_future_bar_1d_dce_2017(datadir, products, md_map)
     __parse_future_bar_1d_dce_2018(datadir, products, md_map)
     for instrument, items in md_map.items():
-        items.sort(key=lambda x:x.time)
-        store.write_all(items, FutureBarData, ["1d", instrument])
-
         if instrument[1].isdigit():
             product = instrument[:1]
         else:
             product = instrument[:2]
-        ins = FutureInstrument("DCE", product, instrument)
+        instrument_id = "DCE.%s" % instrument
+        ins = FutureInstrument(instrument_id, "DCE", product, instrument)
         ins_list.append(ins)
+
+        items.sort(key=lambda x:x.time)
+        store.write_all(items, FutureBarData, ["1d", instrument_id])
     
     ins_list.sort(key=str)
     store.append_all(ins_list, FutureInstrument)
@@ -297,15 +306,23 @@ def init_future_bar_1d_czce(store, datadir):
                 md_map[instrument].append(data)
 
     for instrument, items in md_map.items():
-        items.sort(key=lambda x:x.time)
-        store.write_all(items, FutureBarData, ["1d", instrument])
-
         if instrument[1].isdigit():
             product = instrument[:1]
+            expire = instrument[1:]
         else:
             product = instrument[:2]
-        ins = FutureInstrument("CZCE", product, instrument)
+            expire = instrument[2:]
+        expire = "1" + expire   # 四位数字代表到期月份
+        if product in CZCE_NAME_MAP.keys():
+            product = CZCE_NAME_MAP[product]
+        instrument_id = "CZCE.%s%s" % (product, expire)
+        ins = FutureInstrument(instrument_id, "CZCE", product, instrument)
         ins_list.append(ins)
+
+        items.sort(key=lambda x:x.time)
+        for i in range(1, len(items)):
+            items[i].pre_close_price = items[i-1].close_price
+        store.write_all(items, FutureBarData, ["1d", instrument_id])
     
     ins_list.sort(key=str)
     store.append_all(ins_list, FutureInstrument)

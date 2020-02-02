@@ -16,16 +16,17 @@ class FutureInstrument(object):
 
     @staticmethod
     def column_size():
-        return 3
+        return len(FutureInstrument.column_types())
 
     @staticmethod
     def column_types():
-        return ["string", "string", "string"]
+        return ["string", "string", "string", "string"]
 
-    def __init__(self, exchange, product, code):
+    def __init__(self, id, exchange, product, code):
+        self.id = id
         self.exchange = exchange
         self.product = product
         self.code = code
 
     def __repr__(self):
-        return "%s_%s_%s" % (self.exchange, self.product, self.code)
+        return "%s_%s_%s_%s" % (self.id, self.exchange, self.product, self.code)
