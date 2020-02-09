@@ -14,6 +14,7 @@ import xlrd
 import zipfile
 import shutil
 import re
+from pylon.tools import future as future_tools
 from pylon.model.future import FutureTradingCalendar, FutureProduct, FutureBarData, FutureInstrument
 
 regex_date = "^\d{8}$"
@@ -28,7 +29,7 @@ CZCE_NAME_MAP = {
 def init_future_trading_calendar(store, datadir):
     path = os.path.join(datadir, "shfe/trading_calendar/trading_calendar_%d.csv")
     trading_day_set = set()
-    for year in range(2010, 2020):
+    for year in range(2010, 2021):
         f = open(path % year)
         for line in f.readlines():
             if line.strip() == "":
@@ -306,12 +307,8 @@ def init_future_bar_1d_czce(store, datadir):
                 md_map[instrument].append(data)
 
     for instrument, items in md_map.items():
-        if instrument[1].isdigit():
-            product = instrument[:1]
-            expire = instrument[1:]
-        else:
-            product = instrument[:2]
-            expire = instrument[2:]
+        product = future_tools.get_product_code(instrument)
+        expire = future_tools.get_expire_month(instrument)
         expire = "1" + expire   # 四位数字代表到期月份
         if product in CZCE_NAME_MAP.keys():
             product = CZCE_NAME_MAP[product]

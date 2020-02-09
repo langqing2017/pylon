@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
 """
-Future Trading Calendar
+Stock Trading Calendar
 Created on 2019/12/15
 @author: langqing2017
 @group : pylon
 """
 
-from pylon.model.future.typepath import *
+from pylon.model.stock.typepath import *
 
-class FutureTradingCalendar(object):
+class StockTradingCalendar(object):
     @staticmethod
     def typepath():
-        return TypePath_Future_TradingCalendar
+        return TypePath_Stock_TradingCalendar
 
     @staticmethod
     def column_size():
-        return len(FutureTradingCalendar.column_types())
+        return len(StockTradingCalendar.column_types())
 
     @staticmethod
     def column_types():

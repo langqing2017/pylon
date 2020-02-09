@@ -25,3 +25,10 @@ def get_product_code(instrument_code):
     else:
         product_code = instrument_code[:2]
     return product_code
+
+def get_expire_month(instrument_code):
+    if instrument_code[1].isdigit():
+        expire = instrument_code[1:]
+    else:
+        expire = instrument_code[2:]
+    return expire

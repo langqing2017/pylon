@@ -11,6 +11,6 @@ from pylon.store.csv import CsvDataStore
 from pylon.stone import StoneHandler
 
 if __name__ == "__main__":
-    s = CsvDataStore("./", "future")
+    s = CsvDataStore("./", "data")
     h = StoneHandler(s)
     h.init_store()

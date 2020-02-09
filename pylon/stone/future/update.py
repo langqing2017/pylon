@@ -27,11 +27,12 @@ def update_future_bar_1d_shfe(store):
                 continue
             print("fetch shfe(%s) return %d items" % (date.trading_day, len(md_map)))
             for instrument, md in md_map.items():
+                instrument_id = "SHFE.%s" % instrument
                 if instrument not in instrument_set:
-                    ins = FutureInstrument("shfe", future_tools.get_product_code(instrument), instrument)
+                    ins = FutureInstrument(instrument_id, "shfe", future_tools.get_product_code(instrument), instrument)
                     store.append(ins, FutureInstrument, [])
                     instrument_set.add(instrument)
-                store.append(md, FutureBarData, ["1d", instrument])
+                store.append(md, FutureBarData, ["1d", instrument_id])
             store.set_last_update(dt, FutureBarData, ["1d", "shfe"])
 
 def update_future_bar_1d_dce(store):
@@ -49,11 +50,12 @@ def update_future_bar_1d_dce(store):
                 continue
             print("fetch dce(%s) return %d items" % (date.trading_day, len(md_map)))
             for instrument, md in md_map.items():
+                instrument_id = "DCE.%s" % instrument
                 if instrument not in instrument_set:
-                    ins = FutureInstrument("dce", future_tools.get_product_code(instrument), instrument)
+                    ins = FutureInstrument(instrument_id, "dce", future_tools.get_product_code(instrument), instrument)
                     store.append(ins, FutureInstrument, [])
                     instrument_set.add(instrument)
-                store.append(md, FutureBarData, ["1d", instrument])
+                store.append(md, FutureBarData, ["1d", instrument_id])
             store.set_last_update(dt, FutureBarData, ["1d", "dce"])
 
 def update_future_bar_1d_czce(store):
@@ -70,10 +72,14 @@ def update_future_bar_1d_czce(store):
                 continue
             print("fetch czce(%s) return %d items" % (date.trading_day, len(md_map)))
             for instrument, md in md_map.items():
+                product = future_tools.get_product_code(instrument)
+                expire = future_tools.get_expire_month(instrument)
+                expire = "1" + expire if expire[0] > "5" else "2" + expire
+                instrument_id = "CZCE.%s%s" % (product, expire)
                 if instrument not in instrument_set:
-                    ins = FutureInstrument("czce", future_tools.get_product_code(instrument), instrument)
+                    ins = FutureInstrument(instrument_id, "czce", future_tools.get_product_code(instrument), instrument)
                     store.append(ins, FutureInstrument, [])
                     instrument_set.add(instrument)
-                store.append(md, FutureBarData, ["1d", instrument])
+                store.append(md, FutureBarData, ["1d", instrument_id])
             store.set_last_update(dt, FutureBarData, ["1d", "czce"])
 

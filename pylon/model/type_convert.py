@@ -23,3 +23,6 @@ def string_to_bool(v):
 
 def string_to_datetime(v):
     return parser.parse(v)
+
+def string_to_date(v):
+    return parser.parse(v)

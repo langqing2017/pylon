@@ -11,6 +11,8 @@ import copy
 
 TypePath_Future = ["fu"]
 TypePath_Stock = ["stk"]
+TypePath_Fund = ["fund"]
+TypePath_Bond = ["bond"]
 TypePath_Option = ["opt"]
 
 def extend_typepath(super_typepath, typename):
