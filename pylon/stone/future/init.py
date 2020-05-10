@@ -66,7 +66,7 @@ def init_future_product(store, datadir):
     store.write_all(items, FutureProduct)
 
 def __parse_float(str, value):
-    if str == "" or str == "0":
+    if str == "" or str == "0" or abs(float(str)) < 1e-10:
         return value
     return float(str)
 

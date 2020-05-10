@@ -22,7 +22,7 @@ def update_future_bar_1d_shfe(store):
             continue
         dt = datetime.datetime.strptime(date.trading_day, "%Y%m%d")
         if dt > last_update and dt < datetime.datetime.now():
-            md_map = fetch_future_daily_shfe(dt, product_map)
+            md_map = fetch_future_daily_shfe(dt)
             if len(md_map) <= 0:
                 continue
             print("fetch shfe(%s) return %d items" % (date.trading_day, len(md_map)))
@@ -59,7 +59,7 @@ def update_future_bar_1d_dce(store):
             store.set_last_update(dt, FutureBarData, ["1d", "dce"])
 
 def update_future_bar_1d_czce(store):
-    instrument_set = future_tools.get_instrument_code_set(store)
+    instrument_set = future_tools.get_instrument_id_set(store)
     last_update = store.get_last_update(FutureBarData, ["1d", "czce"])
     date_list = future_tools.get_all_future_trading_calendar(store)
     for date in date_list:
@@ -76,10 +76,10 @@ def update_future_bar_1d_czce(store):
                 expire = future_tools.get_expire_month(instrument)
                 expire = "1" + expire if expire[0] > "5" else "2" + expire
                 instrument_id = "CZCE.%s%s" % (product, expire)
-                if instrument not in instrument_set:
+                if instrument_id not in instrument_set:
                     ins = FutureInstrument(instrument_id, "czce", future_tools.get_product_code(instrument), instrument)
                     store.append(ins, FutureInstrument, [])
-                    instrument_set.add(instrument)
+                    instrument_set.add(instrument_id)
                 store.append(md, FutureBarData, ["1d", instrument_id])
             store.set_last_update(dt, FutureBarData, ["1d", "czce"])
 

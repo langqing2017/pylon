@@ -7,9 +7,9 @@ Created on 2020/2/8
 @group : pylon
 """
 
-import urllib.request
 import datetime
 import demjson
+from pylon.tools.urllib_utils import *
 from pylon.model.type_convert import *
 from pylon.model.stock import StockInstrument, StockBarData
 
@@ -27,9 +27,7 @@ def fetch_stock_instrument_and_bardata():
     bardata_map = {}
     for market, node in MARKETS.items():
         for i in range(1, 100):
-            request = urllib.request.Request(SINA_MD_URL % (i, node), headers={'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'})
-            response = urllib.request.urlopen(request)
-            s = response.read().decode("gbk")
+            s = fetch_url(SINA_MD_URL % (i, node))
             dlist = demjson.decode(s)
             if dlist == None or len(dlist) <= 0: 
                 break

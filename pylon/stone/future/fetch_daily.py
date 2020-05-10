@@ -7,10 +7,10 @@ Created on 2020/1/4
 @group : pylon
 """
 
-import urllib.request
 import re
 import datetime
 import json
+from pylon.tools.urllib_utils import *
 from pylon.model.future import FutureBarData
 
 regex_code = "^[a-zA-Z0-9]{5,6}$"
@@ -26,20 +26,16 @@ def __parse_int(str):
         return 0
     return int(str)
 
-def fetch_future_daily_shfe(date, product_map):
+def fetch_future_daily_shfe(date):
     url = "http://www.shfe.com.cn/data/dailydata/kx/kx%s.dat" % date.strftime("%Y%m%d")
-    request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'})
-    response = urllib.request.urlopen(request)
-    txt = response.read().decode()
+    txt = fetch_url(url)
     data = json.loads(txt)
     md_map = {}
     for item in data["o_curinstrument"]:
-        product = item["PRODUCTNAME"].strip()
-        if product not in product_map:
-            continue
+        product_id = item["PRODUCTID"].strip().split("_")[0]
         if not re.match(regex_delivery_month, item["DELIVERYMONTH"]):
             continue
-        instrument = "%s%s" % (product_map[product], item["DELIVERYMONTH"])
+        instrument = "%s%s" % (product_id, item["DELIVERYMONTH"])
         pre_clear_price = float(item["PRESETTLEMENTPRICE"])
         pre_close_price = pre_clear_price
         open_price = __parse_float(item["OPENPRICE"], pre_clear_price)
@@ -65,10 +61,7 @@ def fetch_future_daily_dce(date, product_map):
             "day": date.day,
             "exportFlag": "txt"
         }
-    post = urllib.parse.urlencode(data).encode('utf-8')
-    request = urllib.request.Request(url, data=post, method="POST", headers={'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'})
-    response = urllib.request.urlopen(request)
-    txt = response.read().decode()
+    txt = fetch_url(url, encode="utf8", post=data)
     md_map = {}
     for line in txt.split("\n"):
         line = line.strip()
@@ -97,9 +90,7 @@ def fetch_future_daily_dce(date, product_map):
 def fetch_future_daily_czce(date):
     url = "http://www.czce.com.cn/cn/DFSStaticFiles/Future/%s/%s/FutureDataDaily.txt" \
                 % (date.strftime("%Y"), date.strftime("%Y%m%d"))
-    request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'})
-    response = urllib.request.urlopen(request)
-    txt = response.read().decode()
+    txt = fetch_url(url, allow_404=True)
     md_map = {}
     for line in txt.split("\n"):
         line = line.strip()

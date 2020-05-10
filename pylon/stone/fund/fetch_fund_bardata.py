@@ -7,9 +7,9 @@ Created on 2020/2/8
 @group : pylon
 """
 
-import urllib.request
 import datetime
 import demjson
+from pylon.tools.urllib_utils import *
 from pylon.model.type_convert import *
 from pylon.model.fund import FundInstrument, FundBarData
 
@@ -25,10 +25,7 @@ def fetch_fund_bardata():
     bardata_map = {}
     for category, url in CATEGORY_MAP.items():
         for i in range(1, 100):
-            request = urllib.request.Request(url % i, headers={'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'})
-            response = urllib.request.urlopen(request)
-            contents = response.read()
-            s = contents.decode("gbk", "replace")
+            s = fetch_url(url % i)
             dlist = demjson.decode(s)
             if dlist == None or len(dlist) <= 0: 
                 break

@@ -19,6 +19,13 @@ def get_instrument_code_set(store):
         instrument_code_set.add(instrument.code)
     return instrument_code_set
 
+def get_instrument_id_set(store):
+    instruments = store.get_all(FutureInstrument, [])
+    instrument_id_set = set()
+    for instrument in instruments:
+        instrument_id_set.add(instrument.id)
+    return instrument_id_set
+
 def get_product_code(instrument_code):
     if instrument_code[1].isdigit():
         product_code = instrument_code[:1]
